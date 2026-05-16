@@ -1,0 +1,9 @@
+{
+  "name": "orbitcommand",
+  "version": "1.0.0",
+  "description": "OrbitABA AI Command Center — Integriosync Labs LLC",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}
