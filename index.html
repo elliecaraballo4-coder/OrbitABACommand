@@ -118,9 +118,11 @@ async function send(){
   history[active.id].push({role:'user',content:text}); input.value=''; input.style.height='46px'; render();
   try{
     const messages=history[active.id].map(m=>({role:m.role,content:m.content}));
-    const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-latest',max_tokens:1000,system:active.system,messages})});
+    const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,system:active.system,messages})});
     const data=await res.json();
-    const reply=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('\n').trim() || (data.error?`Error: ${typeof data.error==='string'?data.error:JSON.stringify(data.error)}`:'No response returned.');
+    const fallbackNote=data._fallback_used?`\n\n(Using fallback model: ${data._fallback_used})`:'';
+    const rawError = data.error ? (typeof data.error==='string'?data.error:JSON.stringify(data.error)) : '';
+    const reply=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('\n').trim() || (rawError?`Request failed: ${rawError}${fallbackNote}`:'No response returned.'+fallbackNote);
     history[active.id].push({role:'assistant',content:reply});
   }catch(err){history[active.id].push({role:'assistant',content:`Network/proxy error: ${err.message}`});}
   render();
