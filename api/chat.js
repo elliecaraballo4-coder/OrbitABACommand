@@ -48,11 +48,11 @@ export default async function handler(req, res) {
     // Normalize incoming model names from frontend
     const incomingModel = body.model || '';
     const normalizedModel =
-      incomingModel === 'claude-sonnet-4-5'
-        ? 'claude-3-5-sonnet-latest'
-        : incomingModel || 'claude-3-5-sonnet-latest';
+      incomingModel === 'claude-3-5-sonnet-latest'
+        ? 'claude-sonnet-4-5'
+        : incomingModel || 'claude-sonnet-4-5';
 
-    const FALLBACK_MODEL = 'claude-3-haiku-20240307';
+    const FALLBACK_MODELS = ['claude-sonnet-4-5', 'claude-3-5-sonnet-latest', 'claude-3-haiku-20240307'];
 
     async function callAnthropic(model) {
       const payload = {
@@ -68,23 +68,30 @@ export default async function handler(req, res) {
       });
     }
 
-    // First attempt
-    let response = await callAnthropic(normalizedModel);
-    let data = await response.json();
+    const modelChain = [normalizedModel, ...FALLBACK_MODELS.filter((m) => m !== normalizedModel)];
 
-    // Retry once if model is invalid/unsupported/not found
-    const errText = JSON.stringify(data || {}).toLowerCase();
-    const modelError =
-      response.status === 400 &&
-      (errText.includes('model') ||
-        errText.includes('unsupported') ||
-        errText.includes('not found') ||
-        errText.includes('invalid'));
+    let response;
+    let data;
+    let usedModel = modelChain[0];
 
-    if (modelError && normalizedModel !== FALLBACK_MODEL) {
-      response = await callAnthropic(FALLBACK_MODEL);
+    for (const model of modelChain) {
+      usedModel = model;
+      response = await callAnthropic(model);
       data = await response.json();
-      data._fallback_used = FALLBACK_MODEL;
+
+      const errText = JSON.stringify(data || {}).toLowerCase();
+      const modelError =
+        response.status === 400 &&
+        (errText.includes('model') ||
+          errText.includes('unsupported') ||
+          errText.includes('not found') ||
+          errText.includes('invalid'));
+
+      if (!modelError) break;
+    }
+
+    if (usedModel !== normalizedModel && data && typeof data === 'object') {
+      data._fallback_used = usedModel;
     }
 
     return res.status(response.status).json(data);
