@@ -1,516 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OrbitCommand — Integriosync Labs</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OrbitABA Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#0a1628;--navy-mid:#0f1f3d;--navy-card:#111e35;--gold:#c9a84c;--gold-light:#e8c97a;--gp:rgba(201,168,76,0.1);--white:#fff;--text:rgba(255,255,255,0.9);--tm:rgba(255,255,255,0.55);--td:rgba(255,255,255,0.28);--b:rgba(255,255,255,0.07);--bg:rgba(201,168,76,0.22);--green:#22c55e;--red:#ef4444;--blue:#60a5fa;--purple:#a78bfa;--teal:#2dd4bf;--orange:#fb923c;}
-*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;overflow:hidden;}
-body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text);display:flex;flex-direction:column;}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(201,168,76,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.02) 1px,transparent 1px);background-size:52px 52px;}
-/* TOPBAR */
-.tb{height:56px;background:rgba(10,22,40,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--b);display:flex;align-items:center;padding:0 20px;gap:14px;flex-shrink:0;position:relative;z-index:20;}
-.logo{display:flex;align-items:center;gap:10px;font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--white);}
-.logo span{color:var(--gold);}
-.logo svg{width:28px;height:28px;}
-.tstat{display:flex;align-items:center;gap:6px;background:var(--gp);border:1px solid var(--bg);padding:4px 12px;border-radius:20px;font-size:.72rem;color:var(--gold);}
-.sdot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pu 2s infinite;}
-@keyframes pu{0%,100%{opacity:1}50%{opacity:.35}}
-.tr{margin-left:auto;display:flex;align-items:center;gap:10px;}
-.clk{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--td);}
-.ib{width:32px;height:32px;border-radius:8px;border:1px solid var(--b);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
-.ib:hover{border-color:var(--bg);background:var(--gp);}
-.ib svg{width:15px;height:15px;stroke:var(--tm);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.ib:hover svg{stroke:var(--gold);}
-/* LAYOUT */
-.ws{flex:1;display:flex;overflow:hidden;position:relative;z-index:1;}
-/* SIDEBAR */
-.sb{width:64px;background:var(--navy-mid);border-right:1px solid var(--b);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0;}
-.nb{width:44px;height:44px;border-radius:12px;border:1px solid transparent;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;position:relative;}
-.nb svg{width:19px;height:19px;stroke:var(--td);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
-.nb:hover,.nb.active{background:var(--gp);border-color:var(--bg);}
-.nb:hover svg,.nb.active svg{stroke:var(--gold);}
-.nsep{width:28px;height:1px;background:var(--b);margin:4px 0;}
-.nbdg{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--navy-mid);}
-.adnv{position:absolute;bottom:7px;right:7px;width:5px;height:5px;border-radius:50%;}
-.nb-bot{margin-top:auto;}
-/* AGENT PANEL */
-.ap{width:255px;border-right:1px solid var(--b);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;}
-.ph{padding:14px 14px 10px;border-bottom:1px solid var(--b);}
-.plbl{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:8px;}
-.srch{width:100%;background:var(--navy-card);border:1px solid var(--b);border-radius:8px;padding:7px 12px;font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--text);outline:none;transition:border-color .2s;}
-.srch:focus{border-color:var(--bg);}
-.srch::placeholder{color:var(--td);}
-.asc{flex:1;overflow-y:auto;padding:7px;}
-.asc::-webkit-scrollbar{width:3px;}
-.asc::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px;}
-.ac{padding:11px;border-radius:12px;border:1px solid var(--b);margin-bottom:5px;cursor:pointer;transition:all .2s;}
-.ac:hover,.ac.active{background:var(--gp);border-color:var(--bg);}
-.ac.active{border-color:var(--gold);}
-.act{display:flex;align-items:center;gap:9px;margin-bottom:7px;}
-.ai{width:33px;height:33px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.ai svg{width:16px;height:16px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.an{font-size:.83rem;font-weight:600;color:var(--white);line-height:1.2;}
-.ar{font-size:.67rem;color:var(--tm);margin-top:1px;}
-.acb{display:flex;align-items:center;justify-content:space-between;}
-.ast{display:flex;align-items:center;gap:4px;font-size:.66rem;font-weight:600;}
-.ado{width:5px;height:5px;border-radius:50%;}
-.atk{font-size:.66rem;color:var(--td);}
-.cb{font-size:.58rem;padding:2px 6px;border-radius:7px;border:1px solid;font-weight:600;}
-.cbg{border-color:rgba(96,165,250,.3);color:var(--blue);background:rgba(96,165,250,.08);}
-.cbm{border-color:rgba(167,139,250,.3);color:var(--purple);background:rgba(167,139,250,.08);}
-.cba{border-color:rgba(201,168,76,.3);color:var(--gold);background:rgba(201,168,76,.08);}
-/* CHAT */
-.ca{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
-.ch{padding:12px 18px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:12px;flex-shrink:0;}
-.cai{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.cai svg{width:18px;height:18px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.can{font-weight:600;font-size:.92rem;color:var(--white);}
-.cad{font-size:.71rem;color:var(--tm);margin-top:1px;}
-.chr{margin-left:auto;display:flex;gap:6px;align-items:center;}
-.chip{padding:4px 10px;border-radius:16px;font-size:.68rem;font-weight:600;border:1px solid var(--bg);color:var(--gold);background:var(--gp);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
-.chip:hover{background:var(--gold);color:var(--navy);}
-.lchip{border-color:rgba(34,197,94,.3);color:var(--green);background:rgba(34,197,94,.08);animation:lg 2s infinite;}
-@keyframes lg{0%,100%{box-shadow:none}50%{box-shadow:0 0 8px rgba(34,197,94,.2)}}
-.msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px;}
-.msgs::-webkit-scrollbar{width:3px;}
-.msgs::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px;}
-.msg{display:flex;gap:10px;max-width:88%;}
-.msg.u{align-self:flex-end;flex-direction:row-reverse;}
-.mav{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.64rem;font-weight:700;}
-.mb{padding:11px 15px;border-radius:13px;font-size:.84rem;line-height:1.65;}
-.msg.a .mb{background:var(--navy-card);border:1px solid var(--b);color:var(--text);border-top-left-radius:3px;}
-.msg.u .mb{background:var(--gp);border:1px solid var(--bg);color:var(--text);border-top-right-radius:3px;}
-.mb strong{color:var(--gold-light);}
-.mb ul{padding-left:16px;margin-top:5px;}
-.mb li{margin-bottom:3px;}
-.mb code{background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:.8em;}
-.dp{display:inline-flex;align-items:center;gap:4px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:5px;padding:1px 7px;font-size:.7rem;color:var(--green);margin:1px;}
-.ip{background:rgba(96,165,250,.1);border-color:rgba(96,165,250,.2);color:var(--blue);}
-.wp{background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--orange);}
-.mt{font-size:.63rem;color:var(--td);margin-top:4px;}
-.msg.u .mt{text-align:right;}
-.tyi{display:flex;gap:4px;align-items:center;padding:3px 0;}
-.tyd{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.35;animation:tb 1.2s infinite;}
-.tyd:nth-child(2){animation-delay:.18s;}
-.tyd:nth-child(3){animation-delay:.36s;}
-@keyframes tb{0%,100%{transform:translateY(0);opacity:.35}50%{transform:translateY(-4px);opacity:1}}
-/* INPUT */
-.ia{padding:14px 18px;border-top:1px solid var(--b);flex-shrink:0;}
-.qr{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
-.qb{padding:4px 10px;border-radius:14px;background:var(--navy-card);border:1px solid var(--b);font-size:.7rem;color:var(--tm);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
-.qb:hover{border-color:var(--gold);color:var(--gold);}
-.ir{display:flex;gap:8px;align-items:flex-end;}
-.ci{flex:1;background:var(--navy-card);border:1px solid var(--b);border-radius:11px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--text);outline:none;resize:none;min-height:42px;max-height:110px;line-height:1.5;transition:border-color .2s;}
-.ci:focus{border-color:var(--bg);}
-.ci::placeholder{color:var(--td);}
-.snd{width:42px;height:42px;border-radius:11px;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
-.snd:hover{background:var(--gold-light);transform:translateY(-1px);}
-.snd:disabled{opacity:.4;cursor:not-allowed;transform:none;}
-.snd svg{width:17px;height:17px;stroke:var(--navy);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
-/* DASH */
-.ds{width:265px;border-left:1px solid var(--b);overflow-y:auto;flex-shrink:0;padding:13px;display:flex;flex-direction:column;gap:12px;}
-.ds::-webkit-scrollbar{width:3px;}
-.ds::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px;}
-.dh{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
-.drb{width:18px;height:18px;border-radius:5px;border:1px solid var(--b);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
-.drb:hover{border-color:var(--gold);}
-.drb svg{width:10px;height:10px;stroke:var(--td);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.drb:hover svg{stroke:var(--gold);}
-.drb.sp svg{animation:sp .8s linear infinite;}
-@keyframes sp{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.kg{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-.kc{background:var(--navy-card);border:1px solid var(--b);border-radius:10px;padding:11px;transition:border-color .2s;}
-.kc:hover{border-color:var(--bg);}
-.kn{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--white);line-height:1;}
-.kl{font-size:.63rem;color:var(--td);margin-top:2px;}
-.kch{font-size:.63rem;font-weight:600;margin-top:3px;}
-.up{color:var(--green);}.dn{color:var(--red);}
-.connbar{background:var(--navy-card);border:1px solid var(--b);border-radius:10px;padding:10px 12px;}
-.crow{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
-.crow:last-child{margin-bottom:0;}
-.cion{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.cion svg{width:11px;height:11px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.cnm{font-size:.71rem;color:var(--tm);flex:1;}
-.cst{font-size:.62rem;font-weight:600;display:flex;align-items:center;gap:3px;}
-.cst.ok{color:var(--green);}.cst.pend{color:var(--gold);}.cst.err{color:var(--red);}
-.cdt{width:5px;height:5px;border-radius:50%;background:currentColor;}
-.tl{display:flex;flex-direction:column;gap:5px;}
-.ti{display:flex;align-items:flex-start;gap:7px;padding:9px;border-radius:9px;background:var(--navy-card);border:1px solid var(--b);cursor:pointer;transition:border-color .2s;}
-.ti:hover{border-color:var(--bg);}
-.tck{width:15px;height:15px;border-radius:4px;border:1.5px solid var(--bg);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
-.ti.done .tck{background:var(--gold);border-color:var(--gold);}
-.ti.done .tck::after{content:'✓';font-size:.55rem;color:var(--navy);font-weight:700;}
-.tt{font-size:.73rem;color:var(--text);line-height:1.4;flex:1;}
-.ti.done .tt{color:var(--td);text-decoration:line-through;}
-.tp{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;}
-.fd{display:flex;flex-direction:column;gap:5px;}
-.fi{display:flex;gap:7px;padding:8px;border-radius:9px;background:var(--navy-card);border:1px solid var(--b);}
-.fdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
-.ft{font-size:.72rem;color:var(--tm);line-height:1.4;flex:1;}
-.ft strong{color:var(--text);}
-.ftime{font-size:.61rem;color:var(--td);white-space:nowrap;margin-top:1px;}
-.calh{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
-.calm{font-size:.74rem;font-weight:600;color:var(--text);}
-.calg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;}
-.cdn{font-size:.59rem;color:var(--td);padding:2px 0;}
-.cd{font-size:.67rem;padding:4px 2px;border-radius:5px;cursor:pointer;color:var(--tm);transition:all .15s;position:relative;}
-.cd:hover{background:var(--gp);color:var(--gold);}
-.cd.today{background:var(--gold);color:var(--navy);font-weight:700;}
-.cd.ev::after{content:'';position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--gold);}
-.cd.today.ev::after{background:var(--navy);}
-.cd.om{opacity:.3;}
-/* AGENT BG COLORS */
-.cm{background:rgba(251,146,60,.13);}.cs{background:rgba(167,139,250,.13);}.ce{background:rgba(96,165,250,.13);}.cc{background:rgba(45,212,191,.13);}.cr{background:rgba(34,197,94,.13);}.cb{background:rgba(201,168,76,.13);}
-@media(max-width:1100px){.ds{display:none;}}
-@media(max-width:780px){.ap{display:none;}}
+:root{--bg:#071225;--panel:#0f1d35;--card:#132541;--line:rgba(255,255,255,.1);--text:#e5edf8;--muted:#9cb2d2;--gold:#d8b45c;--ok:#22c55e}
+*{box-sizing:border-box;margin:0;padding:0} body{font-family:Inter,sans-serif;background:linear-gradient(180deg,#071225,#0a1730);color:var(--text);height:100vh;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line);background:rgba(7,18,37,.85)}
+.brand{font-weight:800;letter-spacing:.2px}.brand span{color:var(--gold)}
+.status{font-size:12px;color:var(--muted)}
+.layout{flex:1;display:grid;grid-template-columns:320px 1fr 330px;min-height:0}
+.panel{border-right:1px solid var(--line);overflow:auto}.panel.right{border-right:none;border-left:1px solid var(--line)}
+.sec{padding:16px}
+.sec h3{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:10px}
+.agent{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer}
+.agent.active{border-color:var(--gold)} .agent .n{font-weight:700;font-size:14px}.agent .r{font-size:12px;color:var(--muted);margin-top:4px}
+.agent .f{font-size:11px;color:#8fd7a7;margin-top:8px}
+.chat{display:flex;flex-direction:column;min-height:0}
+.head{padding:16px;border-bottom:1px solid var(--line)}
+.head .n{font-size:18px;font-weight:800}.head .r{font-size:13px;color:var(--muted);margin-top:4px}
+.messages{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:85%;padding:12px 14px;border-radius:12px;line-height:1.5;font-size:14px;white-space:pre-wrap}
+.msg.user{align-self:flex-end;background:#224270;border:1px solid #2f5a96}
+.msg.ai{background:var(--panel);border:1px solid var(--line)}
+.input{padding:14px;border-top:1px solid var(--line);display:flex;gap:10px}
+textarea{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font:inherit;resize:none;min-height:46px;max-height:120px}
+button{border:none;border-radius:10px;background:var(--gold);color:#111;font-weight:700;padding:0 16px;cursor:pointer}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.label{font-size:11px;text-transform:uppercase;color:var(--muted);letter-spacing:.08em}
+.big{font-size:24px;font-weight:800;margin:6px 0}
+.small{font-size:12px;color:var(--muted)}
+ul{padding-left:18px} li{font-size:13px;margin:6px 0;color:#d2dff3}
+@media (max-width:1100px){.layout{grid-template-columns:300px 1fr}.panel.right{display:none}}
+@media (max-width:820px){.layout{grid-template-columns:1fr}.panel{display:none}.panel.right{display:none}}
 </style>
 </head>
 <body>
-<header class="tb">
-  <div class="logo">
-    <svg viewBox="0 0 100 100" fill="none">
-      <ellipse cx="50" cy="50" rx="45" ry="18" stroke="#c9a84c" stroke-width="4" transform="rotate(-35 50 50)"/>
-      <ellipse cx="50" cy="50" rx="45" ry="18" stroke="#c9a84c" stroke-width="4" transform="rotate(35 50 50)"/>
-      <ellipse cx="50" cy="50" rx="45" ry="18" stroke="#c9a84c" stroke-width="4" transform="rotate(90 50 50)"/>
-      <circle cx="50" cy="50" r="5" fill="#c9a84c"/>
-      <circle cx="50" cy="7" r="3.5" fill="#c9a84c"/>
-      <circle cx="91" cy="64" r="3.5" fill="#c9a84c"/>
-      <circle cx="9" cy="64" r="3.5" fill="#c9a84c"/>
-    </svg>
-    Orbit<span>Command</span>
+  <div class="top">
+    <div class="brand">Orbit<span>ABA</span> Command Center</div>
+    <div class="status" id="clock">Live</div>
   </div>
-  <div class="tstat"><div class="sdot"></div><span>6 agents · Gmail · Calendar · Drive · MS365</span></div>
-  <div class="tr">
-    <span class="clk" id="clk">--:-- --</span>
-    <button class="ib" onclick="checkConns()" title="Refresh">
-      <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-    </button>
+
+  <div class="layout">
+    <aside class="panel">
+      <div class="sec">
+        <h3>AI Team</h3>
+        <div id="agents"></div>
+      </div>
+    </aside>
+
+    <main class="chat">
+      <div class="head">
+        <div class="n" id="activeName"></div>
+        <div class="r" id="activeRole"></div>
+      </div>
+      <div id="messages" class="messages"></div>
+      <div class="input">
+        <textarea id="input" placeholder="Ask your agent to create plans, suggest fixes, draft posts, or run launch operations..."></textarea>
+        <button id="send">Send</button>
+      </div>
+    </main>
+
+    <aside class="panel right">
+      <div class="sec">
+        <h3>Launch Readiness</h3>
+        <div class="card"><div class="label">Target launch</div><div class="big">August 2026</div><div class="small">Build, test, and prep in weekly sprints.</div></div>
+        <div class="card"><div class="label">Cofounder agent focus</div><ul><li>Daily product priorities</li><li>Risk and blocker detection</li><li>Bug-fix recommendations</li><li>Decision support for founder</li></ul></div>
+        <div class="card"><div class="label">Core team operations</div><ul><li>Marketing campaigns + messaging</li><li>Social content + repurposing</li><li>Email follow-up and nurture</li><li>Calendar scheduling and launch cadence</li><li>Business KPIs and runway planning</li></ul></div>
+      </div>
+    </aside>
   </div>
-</header>
-
-<div class="ws">
-  <nav class="sb">
-    <button class="nb active" title="All" onclick="setNav(this,'marketing')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    </button>
-    <div class="nsep"></div>
-    <button class="nb" title="Nova — Marketing" onclick="setNav(this,'marketing')">
-      <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-      <div class="adnv" style="background:var(--green)"></div>
-    </button>
-    <button class="nb" title="Sage — Social" onclick="setNav(this,'social')">
-      <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      <div class="adnv" style="background:var(--green)"></div>
-    </button>
-    <button class="nb" title="Iris — Email" onclick="setNav(this,'email')">
-      <div class="nbdg"></div>
-      <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      <div class="adnv" style="background:var(--red)"></div>
-    </button>
-    <button class="nb" title="Cleo — Calendar" onclick="setNav(this,'calendar')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      <div class="adnv" style="background:var(--green)"></div>
-    </button>
-    <button class="nb" title="Rex — Readiness" onclick="setNav(this,'readiness')">
-      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      <div class="adnv" style="background:var(--green)"></div>
-    </button>
-    <button class="nb" title="Atlas — Business" onclick="setNav(this,'business')">
-      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <div class="adnv" style="background:var(--green)"></div>
-    </button>
-    <div class="nb-bot"><div class="nsep"></div>
-      <button class="nb" title="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></button>
-    </div>
-  </nav>
-
-  <aside class="ap">
-    <div class="ph"><div class="plbl">AI Agents</div><input class="srch" placeholder="Search agents..." oninput="filterA(this.value)"></div>
-    <div class="asc" id="asc"></div>
-  </aside>
-
-  <section class="ca">
-    <div class="ch">
-      <div class="cai cm" id="cai"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-      <div><div class="can" id="can">Nova — Marketing Agent</div><div class="cad" id="cad">Campaign strategy, brand voice, content planning &amp; outreach</div></div>
-      <div class="chr">
-        <span class="chip lchip">● LIVE</span>
-        <span class="chip" onclick="clearChat()">Clear</span>
-        <span class="chip" onclick="exportChat()">Export</span>
-      </div>
-    </div>
-    <div class="msgs" id="msgs"></div>
-    <div class="ia">
-      <div class="qr" id="qr"></div>
-      <div class="ir">
-        <textarea class="ci" id="ci" placeholder="Ask your agent — connected to Gmail, Calendar, Drive &amp; Microsoft 365..." rows="1" onkeydown="hk(event)" oninput="ar(this)"></textarea>
-        <button class="snd" id="snd" onclick="send()">
-          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <aside class="ds">
-    <div>
-      <div class="dh">Connections <button class="drb" id="crb" onclick="checkConns()"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button></div>
-      <div class="connbar">
-        <div class="crow"><div class="cion" style="background:rgba(96,165,250,.1)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><span class="cnm">Gmail</span><span class="cst pend" id="cs0"><div class="cdt"></div>Checking…</span></div>
-        <div class="crow"><div class="cion" style="background:rgba(45,212,191,.1)"><svg viewBox="0 0 24 24" stroke="var(--teal)"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><span class="cnm">Google Calendar</span><span class="cst pend" id="cs1"><div class="cdt"></div>Checking…</span></div>
-        <div class="crow"><div class="cion" style="background:rgba(96,165,250,.1)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div><span class="cnm">Google Drive</span><span class="cst pend" id="cs2"><div class="cdt"></div>Checking…</span></div>
-        <div class="crow"><div class="cion" style="background:rgba(167,139,250,.1)"><svg viewBox="0 0 24 24" stroke="var(--purple)"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><span class="cnm">Microsoft 365</span><span class="cst pend" id="cs3"><div class="cdt"></div>Checking…</span></div>
-      </div>
-    </div>
-    <div>
-      <div class="dh">Business Pulse</div>
-      <div class="kg">
-        <div class="kc"><div class="kn">6</div><div class="kl">Agents Active</div><div class="kch up">All healthy</div></div>
-        <div class="kc"><div class="kn">98%</div><div class="kl">Launch Ready</div><div class="kch up">Aug 2026</div></div>
-        <div class="kc"><div class="kn" id="ki">—</div><div class="kl">Unread Emails</div><div class="kch dn" id="kic">Live data</div></div>
-        <div class="kc"><div class="kn" id="ke">—</div><div class="kl">Events Today</div><div class="kch up" id="kec">Live data</div></div>
-      </div>
-    </div>
-    <div>
-      <div class="dh">Priority Tasks</div>
-      <div class="tl">
-        <div class="ti" onclick="this.classList.toggle('done')"><div class="tck"></div><div class="tt">Launch announcement email</div><div class="tp" style="background:var(--red)"></div></div>
-        <div class="ti" onclick="this.classList.toggle('done')"><div class="tck"></div><div class="tt">LinkedIn beta announcement</div><div class="tp" style="background:var(--red)"></div></div>
-        <div class="ti done" onclick="this.classList.toggle('done')"><div class="tck"></div><div class="tt">DNS via Cloudflare ✓</div><div class="tp" style="background:var(--green)"></div></div>
-        <div class="ti" onclick="this.classList.toggle('done')"><div class="tck"></div><div class="tt">Schedule pilot clinic demo</div><div class="tp" style="background:var(--orange)"></div></div>
-        <div class="ti done" onclick="this.classList.toggle('done')"><div class="tck"></div><div class="tt">Marketing website deployed ✓</div><div class="tp" style="background:var(--green)"></div></div>
-        <div class="ti" onclick="this.classList.toggle('done')"><div class="tck"></div><div class="tt">Supabase BAA submission</div><div class="tp" style="background:var(--orange)"></div></div>
-        <div class="ti" onclick="this.classList.toggle('done')"><div class="tck"></div><div class="tt">Instagram content calendar</div><div class="tp" style="background:var(--blue)"></div></div>
-      </div>
-    </div>
-    <div>
-      <div class="dh">Calendar</div>
-      <div id="mcal"></div>
-    </div>
-    <div>
-      <div class="dh">Agent Activity</div>
-      <div class="fd" id="feed">
-        <div class="fi"><div class="fdot" style="background:var(--purple)"></div><div><div class="ft"><strong>Sage</strong> ready for social content</div><div class="ftime">Now</div></div></div>
-        <div class="fi"><div class="fdot" style="background:var(--blue)"></div><div><div class="ft"><strong>Iris</strong> Gmail connected</div><div class="ftime">Live</div></div></div>
-        <div class="fi"><div class="fdot" style="background:var(--teal)"></div><div><div class="ft"><strong>Cleo</strong> Calendar connected</div><div class="ftime">Live</div></div></div>
-        <div class="fi"><div class="fdot" style="background:var(--green)"></div><div><div class="ft"><strong>Rex</strong> readiness 98%</div><div class="ftime">Live</div></div></div>
-        <div class="fi"><div class="fdot" style="background:var(--gold)"></div><div><div class="ft"><strong>Atlas</strong> intel ready</div><div class="ftime">Live</div></div></div>
-      </div>
-    </div>
-  </aside>
-</div>
 
 <script>
-// Proxy endpoint — same domain on Vercel
-const API = '/api/chat';
-
-const MCP = [
-  {type:'url',url:'https://gmailmcp.googleapis.com/mcp/v1',name:'gmail'},
-  {type:'url',url:'https://calendarmcp.googleapis.com/mcp/v1',name:'google-calendar'},
-  {type:'url',url:'https://drivemcp.googleapis.com/mcp/v1',name:'google-drive'},
-  {type:'url',url:'https://microsoft365.mcp.claude.com/mcp',name:'microsoft365'}
+const API='/api/chat';
+const AGENTS=[
+  {id:'cofounder',name:'Orion',role:'AI Co-Founder',intro:'I am your co-founder partner. I will challenge assumptions, prioritize the roadmap, flag launch risk, and help get OrbitABA ready for August 2026.',
+   system:'You are Orion, AI Co-Founder for OrbitABA. Think like a startup cofounder: strategic, decisive, high-accountability. Always provide: 1) direct recommendation, 2) why it matters, 3) next 3 concrete actions. Focus on launch readiness for August 2026.'},
+  {id:'product',name:'Rex',role:'Product & Readiness Agent',intro:'I track launch-critical tasks, QA quality, blockers, and release sequencing.',
+   system:'You are Rex, Product and App Readiness Agent. Help prepare OrbitABA for launch in August 2026. Prioritize defects, technical debt, acceptance criteria, and release plans.'},
+  {id:'marketing',name:'Nova',role:'Marketing Strategy Agent',intro:'I build GTM plans, positioning, offers, and campaign strategy for clinics and providers.',
+   system:'You are Nova, OrbitABA Marketing Strategist. Create practical campaign plans, messaging angles, and launch funnels for OrbitABA.'},
+  {id:'social',name:'Sage',role:'Social Media Agent',intro:'I create platform-specific content for LinkedIn, Instagram, and Facebook with posting cadence.',
+   system:'You are Sage, Social Media Agent for OrbitABA. Create crisp, platform-native content calendars and engagement plans.'},
+  {id:'email',name:'Iris',role:'Email & CRM Agent',intro:'I draft outreach, nurture sequences, and follow-ups for leads, partners, and pilot users.',
+   system:'You are Iris, Email and CRM Agent. Draft persuasive, human emails with clear CTAs and follow-up timelines.'},
+  {id:'calendar',name:'Cleo',role:'Calendar & Ops Agent',intro:'I structure founder calendar blocks, meetings, launch milestones, and recurring reviews.',
+   system:'You are Cleo, Calendar and Operations Agent. Turn goals into realistic calendar plans and execution rhythms.'},
+  {id:'finance',name:'Atlas',role:'Business Intelligence Agent',intro:'I model KPIs, pricing scenarios, runway, and growth targets for founder decision-making.',
+   system:'You are Atlas, Business Intelligence Agent. Be analytical and concise. Give assumptions, metrics, and decisions.'}
 ];
 
-const AG=[
-  {id:'marketing',name:'Nova',role:'Marketing Agent',ac:'cm',sc:'var(--orange)',sa:'active',sc2:'var(--green)',tk:'AI-powered',cb:'cba',
-   desc:'Campaign strategy, brand voice, content & outreach',
-   icon:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
-   q:['Draft launch campaign','Write blog post','Competitive analysis','Email sequence','Brand messaging','Press release'],
-   sys:`You are Nova, marketing AI agent for OrbitABA by Ellie Caraballo, Integriosync Labs LLC, Florida. Go-live August 2026. Google Drive access for brand files. Help with strategy, campaigns, brand voice, content, email sequences, competitive positioning vs CentralReach. Pricing: RBT $35/mo, BCBA $40/mo, Caregiver free, founding rate $25/user flat all modules. Strategic, creative, concise.`,
-   hi:`Hello! I'm <strong>Nova</strong>, your Marketing Agent. I have access to your <span class="dp">Google Drive</span> for brand assets.\n\nReady to build your August 2026 go-to-market strategy. What should we tackle?\n<ul><li>Pre-launch email campaign</li><li>LinkedIn thought leadership</li><li>Press outreach to ABA publications</li><li>Clinic owner persona messaging</li></ul>`},
-  {id:'social',name:'Sage',role:'Social Media Agent',ac:'cs',sc:'var(--purple)',sa:'active',sc2:'var(--green)',tk:'AI-powered',cb:'cba',
-   desc:'LinkedIn, Instagram, Facebook content & scheduling',
-   icon:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>',
-   q:['Write LinkedIn post','Instagram caption','Content calendar','Hashtag strategy','Engagement plan','Reel concept'],
-   sys:`You are Sage, social media AI agent for OrbitABA. Manage LinkedIn (clinic owners & BCBAs), Instagram (community), Facebook (caregivers). Google Drive access for brand assets. Brand: luxury, warm, clinician-built. Launch August 2026. Write platform-specific, on-brand content.`,
-   hi:`Hi! I'm <strong>Sage</strong>, your Social Media Agent with <span class="dp">Google Drive</span> access.\n\nManaging LinkedIn, Instagram, and Facebook. What platform today?\n<ul><li>LinkedIn — thought leadership for clinic owners & BCBAs</li><li>Instagram — community & behind-the-scenes</li><li>Facebook — caregiver & parent outreach</li></ul>`},
-  {id:'email',name:'Iris',role:'Email Agent',ac:'ce',sc:'var(--blue)',sa:'alert',sc2:'var(--red)',tk:'Scanning inbox…',cb:'cbg',
-   desc:'Gmail + Outlook triage, drafts & outreach sequences',
-   icon:'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
-   q:['Check my inbox','Draft a reply','Write outreach email','Summarize threads','Flag urgent emails','Compose follow-up'],
-   sys:`You are Iris, email AI agent for OrbitABA. LIVE access to Gmail (search_threads, get_thread, create_draft, list_labels) and Microsoft 365 Outlook (outlook_email_search). When asked to check email, USE Gmail tools to search real emails. Summarize findings. When drafting, use create_draft. Confirm before sending. Know OrbitABA: 5 portals, HIPAA, FL-configured, built by active RBT Ellie Caraballo.`,
-   hi:`Hi! I'm <strong>Iris</strong>, your Email Agent. Connected to <span class="dp">Gmail</span> <span class="ip">Outlook</span>.\n\nSay <strong>"check my inbox"</strong> and I'll pull your real emails and summarize what needs attention. I can draft replies, write outreach, and manage follow-ups.`},
-  {id:'calendar',name:'Cleo',role:'Calendar Agent',ac:'cc',sc:'var(--teal)',sa:'active',sc2:'var(--green)',tk:'Loading events…',cb:'cbg',
-   desc:'Google Calendar + Outlook scheduling & planning',
-   icon:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
-   q:["Today's schedule","Find free time","Schedule demo call","Block focus time","This week's events","Create event"],
-   sys:`You are Cleo, calendar AI agent for OrbitABA. LIVE access to Google Calendar (list_events, create_event, find_free_time, get_event, list_calendars) and Microsoft 365 (outlook_calendar_search, find_meeting_availability). When asked about schedule, USE calendar tools to fetch real events. When scheduling, use create_event. Always confirm before creating/modifying. Testing May-July 2026, Go-live August 2026.`,
-   hi:`Hi! I'm <strong>Cleo</strong>, your Calendar Agent. Connected to <span class="dp">Google Calendar</span> <span class="ip">Outlook</span>.\n\nSay <strong>"today's schedule"</strong> to pull real events. I can schedule demos, block focus time, and track your August 2026 launch milestones.`},
-  {id:'readiness',name:'Rex',role:'App Readiness Agent',ac:'cr',sc:'var(--green)',sa:'active',sc2:'var(--green)',tk:'98% ready',cb:'cba',
-   desc:'Launch checklist, BAA status & go-live prep',
-   icon:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
-   q:['Full launch checklist','BAA status','Blocking issues','Testing assignments','Go-live timeline','Risk assessment'],
-   sys:`You are Rex, App Readiness AI agent for OrbitABA. Google Drive access for project docs. Track: BAAs pending (Supabase, Anthropic, Availity, Office Ally), testing May-July 2026, go-live August 2026, 5 portals, Lovable/Vercel hosting, Supabase DB, Cloudflare DNS. SPA routing fixed. Readiness: 98%. Precise, flag blockers clearly.`,
-   hi:`I'm <strong>Rex</strong>, your App Readiness Agent with <span class="dp">Google Drive</span> access.\n\nOrbitABA: <strong>98% launch ready</strong>.\n\n<strong>Blocking:</strong>\n<ul><li>🔴 Supabase BAA — pending</li><li>🔴 Anthropic BAA — pending</li><li>🟡 Availity BAA — in review</li><li>🟡 Office Ally BAA — in review</li></ul>Say <strong>"full launch checklist"</strong> for everything.`},
-  {id:'business',name:'Atlas',role:'Business Intelligence',ac:'cb',sc:'var(--gold)',sa:'active',sc2:'var(--green)',tk:'Report ready',cb:'cbg',
-   desc:'KPIs, revenue projections & growth strategy',
-   icon:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
-   q:['Revenue projection','Weekly report','Clinic pipeline','Competitive analysis','Growth model','Founding clinic ROI'],
-   sys:`You are Atlas, Business Intelligence AI agent for OrbitABA and Integriosync Labs LLC. Google Drive and Microsoft 365 access for business docs. Pricing: RBT $35/mo, BCBA $40/mo, Caregiver free, add-ons $1.50/user or $5 all 4, Founding $25/user flat forever. vs CentralReach ~$65/user. Break-even ~8 clinics. Launch August 2026. Analytical and strategic.`,
-   hi:`I'm <strong>Atlas</strong>, your Business Intelligence Agent. Connected to <span class="dp">Google Drive</span> <span class="ip">Microsoft 365</span>.\n\n<strong>Snapshot:</strong>\n<ul><li>RBT $35 · BCBA $40 · Caregiver free</li><li>Founding: $25/user locked forever</li><li>Break-even: ~8 clinics</li><li>vs CentralReach: 34–46% cheaper</li></ul>Say <strong>"revenue projection"</strong> to model your launch.`}
-];
+let active=AGENTS[0];
+const history={};
+AGENTS.forEach(a=>history[a.id]=[{role:'assistant',content:a.intro}]);
 
-let cur=AG[0],hist={};
-AG.forEach(a=>{hist[a.id]=[{r:'a',t:a.hi,ts:ts()}];});
+const agentsEl=document.getElementById('agents');
+const messagesEl=document.getElementById('messages');
+const activeName=document.getElementById('activeName');
+const activeRole=document.getElementById('activeRole');
+const input=document.getElementById('input');
 
-function ts(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
-function esc(s){return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+document.getElementById('send').addEventListener('click',send);
+input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
+input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';});
 
-function renderAg(f=''){
-  const el=document.getElementById('asc');
-  const list=f?AG.filter(a=>a.name.toLowerCase().includes(f)||a.role.toLowerCase().includes(f)):AG;
-  el.innerHTML=list.map(a=>`
-    <div class="ac ${a.id===cur.id?'active':''}" onclick="sw('${a.id}')">
-      <div class="act">
-        <div class="ai ${a.ac}"><svg viewBox="0 0 24 24" fill="none" stroke="${a.sc}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${a.icon}</svg></div>
-        <div style="flex:1;min-width:0;"><div class="an">${a.name}</div><div class="ar">${a.role}</div></div>
-        <div class="cb ${a.cb}">${a.cb==='cbg'?'Google':a.cb==='cbm'?'MS365':'AI'}</div>
-      </div>
-      <div class="acb">
-        <div class="ast"><div class="ado" style="background:${a.sc2}"></div><span style="color:${a.sc2}">${a.sa==='alert'?'Alert':'Active'}</span></div>
-        <div class="atk">${a.tk}</div>
-      </div>
-    </div>`).join('');
-}
-function filterA(v){renderAg(v.toLowerCase());}
+function drawAgents(){agentsEl.innerHTML=AGENTS.map(a=>`<div class="agent ${a.id===active.id?'active':''}" onclick="switchAgent('${a.id}')"><div class="n">${a.name}</div><div class="r">${a.role}</div><div class="f">Independent specialist</div></div>`).join('');}
+function switchAgent(id){active=AGENTS.find(a=>a.id===id)||AGENTS[0];drawAgents();render();}
+window.switchAgent=switchAgent;
 
-function sw(id){
-  cur=AG.find(a=>a.id===id)||AG[0];
-  renderAg();
-  document.getElementById('cai').className=`cai ${cur.ac}`;
-  document.getElementById('cai').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="${cur.sc}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${cur.icon}</svg>`;
-  document.getElementById('can').textContent=`${cur.name} — ${cur.role}`;
-  document.getElementById('cad').textContent=cur.desc;
-  rq();rm();
-}
-function setNav(btn,id){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');sw(id);}
-
-function rm(){
-  const c=document.getElementById('msgs');
-  c.innerHTML=hist[cur.id].map(m=>`
-    <div class="msg ${m.r==='u'?'u':'a'}">
-      <div class="mav ${m.r==='u'?'':''+cur.ac}" style="${m.r==='u'?'background:rgba(201,168,76,.12);color:var(--gold);':''}">
-        ${m.r==='u'?'YOU':`<svg viewBox="0 0 24 24" fill="none" stroke="${cur.sc}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">${cur.icon}</svg>`}
-      </div>
-      <div><div class="mb">${m.t.replace(/\n/g,'<br>')}</div><div class="mt">${m.ts}</div></div>
-    </div>`).join('');
-  c.scrollTop=c.scrollHeight;
-}
-
-function rq(){
-  document.getElementById('qr').innerHTML=cur.q.map(q=>`<button class="qb" onclick="sq(this.textContent)">${q}</button>`).join('');
-}
-function sq(t){document.getElementById('ci').value=t;send();}
+function render(){activeName.textContent=`${active.name} — ${active.role}`;activeRole.textContent='OrbitABA executive command team';messagesEl.innerHTML=history[active.id].map(m=>`<div class="msg ${m.role==='user'?'user':'ai'}">${escapeHtml(m.content)}</div>`).join('');messagesEl.scrollTop=messagesEl.scrollHeight;}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 async function send(){
-  const inp=document.getElementById('ci');
-  const text=inp.value.trim();
-  if(!text)return;
-  inp.value='';inp.style.height='auto';
-  const btn=document.getElementById('snd');
-  btn.disabled=true;
-  hist[cur.id].push({r:'u',t:esc(text),ts:ts()});
-  rm();
-  const c=document.getElementById('msgs');
-  const ty=document.createElement('div');
-  ty.className='msg a';ty.id='ty';
-  ty.innerHTML=`<div class="mav ${cur.ac}"><svg viewBox="0 0 24 24" fill="none" stroke="${cur.sc}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">${cur.icon}</svg></div><div><div class="mb"><div class="tyi"><div class="tyd"></div><div class="tyd"></div><div class="tyd"></div></div></div></div>`;
-  c.appendChild(ty);c.scrollTop=c.scrollHeight;
+  const text=input.value.trim(); if(!text) return;
+  history[active.id].push({role:'user',content:text}); input.value=''; input.style.height='46px'; render();
   try{
-    const msgs=hist[cur.id].slice(1).map(m=>({role:m.r==='u'?'user':'assistant',content:m.t.replace(/<[^>]*>/g,'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&')}));
-    const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-latest',max_tokens:1000,system:cur.sys,messages:msgs})});
+    const messages=history[active.id].map(m=>({role:m.role,content:m.content}));
+    const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-latest',max_tokens:1000,system:active.system,messages})});
     const data=await res.json();
-    let reply='';
-    if(data.content && Array.isArray(data.content)){
-      data.content.forEach(b=>{if(b.type==='text')reply+=b.text;});
-    }
-    if(!reply && data.error){
-      const errMsg = typeof data.error === 'object' ? (data.error.message||JSON.stringify(data.error)) : data.error;
-      reply='⚠️ '+errMsg+' — Check your ANTHROPIC_API_KEY in Vercel Environment Variables.';
-    }
-    if(!reply)reply='No response. Please try again.';
-    document.getElementById('ty')?.remove();
-    hist[cur.id].push({r:'a',t:reply,ts:ts()});
-    addFeed(cur.name,`replied to "${text.slice(0,32)}${text.length>32?'…':''}"`,cur.sc);
-    rm();
-  }catch(e){
-    document.getElementById('ty')?.remove();
-    hist[cur.id].push({r:'a',t:`Error: ${e.message}`,ts:ts()});
-    rm();
-  }
-  btn.disabled=false;
+    const reply=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('\n').trim() || (data.error?`Error: ${typeof data.error==='string'?data.error:JSON.stringify(data.error)}`:'No response returned.');
+    history[active.id].push({role:'assistant',content:reply});
+  }catch(err){history[active.id].push({role:'assistant',content:`Network/proxy error: ${err.message}`});}
+  render();
 }
 
-function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
-function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px';}
-function clearChat(){hist[cur.id]=[{r:'a',t:cur.hi,ts:ts()}];rm();}
-function exportChat(){
-  const text=hist[cur.id].map(m=>`[${m.r==='u'?'YOU':'AGENT'} ${m.ts}]\n${m.t.replace(/<[^>]*>/g,'')}`).join('\n\n---\n\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));a.download=`${cur.name}-${Date.now()}.txt`;a.click();
-}
-
-function addFeed(name,action,color){
-  const f=document.getElementById('feed');
-  const d=document.createElement('div');d.className='fi';
-  d.innerHTML=`<div class="fdot" style="background:${color}"></div><div><div class="ft"><strong>${name}</strong> ${action}</div><div class="ftime">${ts()}</div></div>`;
-  f.insertBefore(d,f.firstChild);if(f.children.length>8)f.removeChild(f.lastChild);
-}
-
-async function checkConns(){
-  const btn=document.getElementById('crb');
-  if(btn)btn.classList.add('sp');
-  for(let i=0;i<4;i++){
-    try{
-      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-latest',max_tokens:10,messages:[{role:'user',content:'ping'}]})});
-      const d=await r.json();
-      setC(i,d.content?'ok':'err');
-    }catch(e){setC(i,'err');}
-  }
-  if(btn)btn.classList.remove('sp');
-  loadKPIs();
-}
-
-function setC(i,s){
-  const el=document.getElementById(`cs${i}`);
-  if(!el)return;
-  el.className=`cst ${s==='ok'?'ok':s==='err'?'err':'pend'}`;
-  el.innerHTML=`<div class="cdt"></div>${s==='ok'?'Connected':s==='err'?'Auth needed':'Checking…'}`;
-}
-
-async function loadKPIs(){
-  try{
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-latest',max_tokens:20,system:'Reply ONLY with this exact JSON, no other text: {"count":0,"urgent":0}',messages:[{role:'user',content:'ok'}]})});
-    const d=await r.json();const t=d.content?.find(b=>b.type==='text')?.text||'';
-    const m=t.match(/\{[^}]+\}/);if(m){const j=JSON.parse(m[0]);document.getElementById('ki').textContent=j.count??'—';document.getElementById('kic').textContent=j.urgent>0?`${j.urgent} urgent`:'All clear';}
-  }catch(e){}
-  try{
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-latest',max_tokens:20,system:'Reply ONLY with this exact JSON, no other text: {"count":0,"next":"none"}',messages:[{role:'user',content:'ok'}]})});
-    const d=await r.json();const t=d.content?.find(b=>b.type==='text')?.text||'';
-    const m=t.match(/\{[^}]+\}/);if(m){const j=JSON.parse(m[0]);document.getElementById('ke').textContent=j.count??'—';document.getElementById('kec').textContent=j.next||'Free day';}
-  }catch(e){}
-}
-
-function renderCal(){
-  const n=new Date(),y=n.getFullYear(),mo=n.getMonth(),td=n.getDate();
-  const fd=new Date(y,mo,1).getDay(),dim=new Date(y,mo+1,0).getDate();
-  const mn=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const ev=[10,13,15,17,22,28];
-  document.getElementById('mcal').innerHTML=`
-    <div class="calh"><span class="calm">${mn[mo]} ${y}</span></div>
-    <div class="calg">
-      ${['S','M','T','W','T','F','S'].map(d=>`<div class="cdn">${d}</div>`).join('')}
-      ${Array(fd).fill('<div class="cd om"></div>').join('')}
-      ${Array.from({length:dim},(_,i)=>{const d=i+1;return`<div class="cd${d===td?' today':''}${ev.includes(d)?' ev':''}">${d}</div>`;}).join('')}
-    </div>`;
-}
-
-setInterval(()=>{document.getElementById('clk').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});},1000);
-document.getElementById('clk').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-
-renderAg();rq();rm();renderCal();
-setTimeout(checkConns,800);
+setInterval(()=>{document.getElementById('clock').textContent=new Date().toLocaleString([], {hour:'2-digit',minute:'2-digit',month:'short',day:'numeric'});},1000);
+drawAgents();render();
 </script>
 </body>
 </html>
