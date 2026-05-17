@@ -420,7 +420,7 @@ async function send(){
   c.appendChild(ty);c.scrollTop=c.scrollHeight;
   try{
     const msgs=hist[cur.id].slice(1).map(m=>({role:m.r==='u'?'user':'assistant',content:m.t.replace(/<[^>]*>/g,'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&')}));
-    const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,system:cur.sys,messages:msgs})});
+    const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-latest',max_tokens:1000,system:cur.sys,messages:msgs})});
     const data=await res.json();
     let reply='';
     if(data.content && Array.isArray(data.content)){
@@ -463,7 +463,7 @@ async function checkConns(){
   if(btn)btn.classList.add('sp');
   for(let i=0;i<4;i++){
     try{
-      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:10,messages:[{role:'user',content:'ping'}]})});
+      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-latest',max_tokens:10,messages:[{role:'user',content:'ping'}]})});
       const d=await r.json();
       setC(i,d.content?'ok':'err');
     }catch(e){setC(i,'err');}
@@ -481,12 +481,12 @@ function setC(i,s){
 
 async function loadKPIs(){
   try{
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:20,system:'Reply ONLY with this exact JSON, no other text: {"count":0,"urgent":0}',messages:[{role:'user',content:'ok'}]})});
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-latest',max_tokens:20,system:'Reply ONLY with this exact JSON, no other text: {"count":0,"urgent":0}',messages:[{role:'user',content:'ok'}]})});
     const d=await r.json();const t=d.content?.find(b=>b.type==='text')?.text||'';
     const m=t.match(/\{[^}]+\}/);if(m){const j=JSON.parse(m[0]);document.getElementById('ki').textContent=j.count??'—';document.getElementById('kic').textContent=j.urgent>0?`${j.urgent} urgent`:'All clear';}
   }catch(e){}
   try{
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:20,system:'Reply ONLY with this exact JSON, no other text: {"count":0,"next":"none"}',messages:[{role:'user',content:'ok'}]})});
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-3-5-sonnet-latest',max_tokens:20,system:'Reply ONLY with this exact JSON, no other text: {"count":0,"next":"none"}',messages:[{role:'user',content:'ok'}]})});
     const d=await r.json();const t=d.content?.find(b=>b.type==='text')?.text||'';
     const m=t.match(/\{[^}]+\}/);if(m){const j=JSON.parse(m[0]);document.getElementById('ke').textContent=j.count??'—';document.getElementById('kec').textContent=j.next||'Free day';}
   }catch(e){}
